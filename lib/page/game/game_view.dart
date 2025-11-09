@@ -184,7 +184,7 @@ String _sanitizeHtml(String input) {
 
 const Map<GameLanguage, _GameCopy> _localizedCopies = {
   GameLanguage.zh: _GameCopy(
-    appTitle: 'Taipei Guessr',
+    appTitle: 'Taipei Guess 台北客',
     backSemantics: '返回上一頁',
     infoButtonSemantics: '遊戲介紹',
     infoDialogTitle: '遊戲說明',
@@ -214,7 +214,7 @@ const Map<GameLanguage, _GameCopy> _localizedCopies = {
     resultBannerSubtitleWrong: _resultBannerSubtitleWrongZh,
     resultBannerFooter: '按下重新開始，會重置三條命並抽出全新的題組。',
     reloadLabel: '重新載入',
-    landingTitle: 'Taipei Guessr',
+    landingTitle: 'Taipei Guess 台北客',
     landingDescription: '每幅光影，皆有其座標。憑一張臺北的剪影，在記憶的街角，尋訪那最相近的一隅。',
     landingBullets: [
       '觀察上方景點，回想所在區域',
@@ -227,7 +227,7 @@ const Map<GameLanguage, _GameCopy> _localizedCopies = {
     finalSummaryTitle: '遊戲結算',
   ),
   GameLanguage.en: _GameCopy(
-    appTitle: 'Taipei Guessr',
+    appTitle: 'Taipei Guess 台北客',
     backSemantics: 'Go back',
     infoButtonSemantics: 'How to play',
     infoDialogTitle: 'How to Play',
@@ -257,7 +257,7 @@ const Map<GameLanguage, _GameCopy> _localizedCopies = {
     resultBannerSubtitleWrong: _resultBannerSubtitleWrongEn,
     resultBannerFooter: 'Press Restart to reset three lives and draw a fresh set of questions.',
     reloadLabel: 'Reload',
-    landingTitle: 'Taipei Guessr',
+    landingTitle: 'Taipei Guess 台北客',
     landingDescription: 'Every beam of light has its coordinates. With one snapshot of Taipei, rediscover the corner that feels closest.',
     landingBullets: [
       'Study the featured attraction and recall where it is.',
@@ -558,7 +558,8 @@ class _GameViewState extends State<GameView> {
 
   void _showGameInfo() {
     final _GameStrings strings = _strings;
-  Get.dialog(
+    final List<String> infoLines = strings.infoDialogBody.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
+    Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: TPText(
@@ -566,9 +567,33 @@ class _GameViewState extends State<GameView> {
           style: TPTextStyles.h3SemiBold,
           color: TPColors.grayscale900,
         ),
-        content: TPText(
-          strings.infoDialogBody,
-          color: TPColors.grayscale700,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final String line in infoLines) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      '•',
+                      style: TextStyle(color: TPColors.grayscale700),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TPText(
+                      line,
+                      color: TPColors.grayscale700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+          ],
         ),
         actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
         actions: [
@@ -817,12 +842,6 @@ class _GameViewState extends State<GameView> {
                         strings.correctAnswersLabel(_correctAnswers),
                         style: TPTextStyles.h1SemiBold,
                         color: accent,
-                      ),
-                      const SizedBox(height: 4),
-                      TPText(
-                        strings.challengeSubtitle,
-                        style: TPTextStyles.bodyRegular,
-                        color: TPColors.grayscale600,
                       ),
                     ],
                   ),

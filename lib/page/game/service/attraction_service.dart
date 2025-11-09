@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:http/http.dart' as http;
 import 'package:town_pass/page/game/model/attraction.dart';
@@ -61,7 +62,7 @@ class AttractionService {
     attractions.shuffle();
     final Attraction target = attractions.removeAt(0);
     final List<GameOption> options = attractions.take(4).map((attraction) {
-      final double distanceScore = (attraction.latitude - target.latitude).abs() + (attraction.longitude - target.longitude).abs();
+      final double distanceScore = _distanceBetweenKm(target, attraction);
       return GameOption(attraction: attraction, distanceScore: distanceScore);
     }).toList();
 
@@ -84,6 +85,21 @@ class AttractionService {
       correctIndex: correctIndex,
     );
   }
+
+  double _distanceBetweenKm(Attraction a, Attraction b) {
+    const double earthRadiusKm = 6371;
+    final double dLat = _degToRad(b.latitude - a.latitude);
+    final double dLon = _degToRad(b.longitude - a.longitude);
+    final double lat1 = _degToRad(a.latitude);
+    final double lat2 = _degToRad(b.latitude);
+    final double sinLat = math.sin(dLat / 2);
+    final double sinLon = math.sin(dLon / 2);
+    final double h = sinLat * sinLat + math.cos(lat1) * math.cos(lat2) * sinLon * sinLon;
+    final double c = 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h));
+    return earthRadiusKm * c;
+  }
+
+  double _degToRad(double deg) => deg * math.pi / 180;
 
   void dispose() {
     _client.close();
