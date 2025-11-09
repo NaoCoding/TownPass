@@ -558,7 +558,8 @@ class _GameViewState extends State<GameView> {
 
   void _showGameInfo() {
     final _GameStrings strings = _strings;
-  Get.dialog(
+    final List<String> infoLines = strings.infoDialogBody.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
+    Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: TPText(
@@ -566,9 +567,33 @@ class _GameViewState extends State<GameView> {
           style: TPTextStyles.h3SemiBold,
           color: TPColors.grayscale900,
         ),
-        content: TPText(
-          strings.infoDialogBody,
-          color: TPColors.grayscale700,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final String line in infoLines) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      '•',
+                      style: TextStyle(color: TPColors.grayscale700),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TPText(
+                      line,
+                      color: TPColors.grayscale700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+          ],
         ),
         actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
         actions: [
